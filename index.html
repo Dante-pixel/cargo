@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cargo Prices</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 10px;
+    }
+    h2 { text-align: center; }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #334155;
+      text-align: left;
+    }
+
+    th {
+      cursor: pointer;
+      background: #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <h2>📦 Карго компании</h2>
+
+  <input id="search" placeholder="🔍 Поиск карго...">
+
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortByPrice()">Цена</th>
+        <th>Название</th>
+        <th>Срок</th>
+        <th>Телефон</th>
+      </tr>
+    </thead>
+    <tbody id="table"></tbody>
+  </table>
+
+  <script>
+    let cargos = [
+      { name: "FAST CARGO", price: 3.1, days: "7-9", phone: "+996..." },
+      { name: "ASIA CARGO", price: 2.8, days: "10-14", phone: "+996..." }
+    ];
+
+    let asc = true;
+
+    function render(data) {
+      const table = document.getElementById('table');
+      table.innerHTML = '';
+      data.forEach(c => {
+        table.innerHTML += `
+          <tr>
+            <td>${c.price}$</td>
+            <td>${c.name}</td>
+            <td>${c.days}</td>
+            <td>${c.phone}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function sortByPrice() {
+      asc = !asc;
+      cargos.sort((a, b) => asc ? a.price - b.price : b.price - a.price);
+      render(cargos);
+    }
+
+    document.getElementById('search').addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      const filtered = cargos.filter(c =>
+        c.name.toLowerCase().includes(q)
+      );
+      render(filtered);
+    });
+
+    render(cargos);
+  </script>
+</body>
+</html>
 
