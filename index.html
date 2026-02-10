@@ -1,99 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Cargo Prices</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      padding: 10px;
-    }
-    h2 { text-align: center; }
-
-    input {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border: none;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 8px;
-      border-bottom: 1px solid #334155;
-      text-align: left;
-    }
-
-    th {
-      cursor: pointer;
-      background: #1e293b;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Cargo Prices</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            padding: 10px;
+        }
+        h2 { text-align: center; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #334155;
+            text-align: left;
+        }
+        th {
+            cursor: pointer;
+            background: #1e293b;
+            user-select: none;
+        }
+        th:hover {
+            background: #334155;
+        }
+        .sort-icon {
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+    </style>
 </head>
 <body>
-  <h2>📦 Карго компании</h2>
 
-  <input id="search" placeholder="🔍 Поиск карго...">
+<h2>📦 Карго компании</h2>
+<input id="search" type="text" placeholder="🔍 Поиск по названию...">
 
-  <table>
+<table>
     <thead>
-      <tr>
-        <th>Название</th>
-        <th onclick="sortByPrice()">Цена</th>
-        <th>Срок</th>
-        <th>Телефон</th>
-      </tr>
+        <tr>
+            <th>Название</th>
+            <th onclick="sortByPrice()">Цена <span id="price-icon" class="sort-icon">↕</span></th>
+            <th>Срок (дней)</th>
+            <th>Телефон</th>
+        </tr>
     </thead>
-    <tbody id="table"></tbody>
-  </table>
+    <tbody id="table-body"></tbody>
+</table>
 
-  <script>
+<script>
     let cargos = [
-      { name: "FAST CARGO", price: 3.1, days: "7-9", phone: "+996..." },
-      { name: "ASIA CARGO", price: 2.8, days: "10-14", phone: "+996..." }
+        { name: "FAST CARGO", price: 3.1, days: "7-9", phone: "+996 555 123" },
+        { name: "ASIA CARGO", price: 2.8, days: "10-14", phone: "+996 777 456" },
+        { name: "TURAN EXPRESS", price: 3.5, days: "5-7", phone: "+996 700 888" },
+        { name: "NOMAD LOGISTIC", price: 2.5, days: "15-20", phone: "+996 222 333" }
     ];
 
-    let asc = true;
+    let currentSortAsc = true;
 
     function render(data) {
-      const table = document.getElementById('table');
-      table.innerHTML = '';
-      data.forEach(c => {
-        table.innerHTML += `
-          <tr>
-            <td>${c.name}</td>
-            <td>${c.price}$</td>
-            <td>${c.days}</td>
-            <td>${c.phone}</td>
-          </tr>
-        `;
-      });
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = '';
+        
+        data.forEach(c => {
+            const row = `
+                <tr>
+                    <td>**${c.name}**</td>
+                    <td>${c.price}$</td>
+                    <td>${c.days}</td>
+                    <td>${c.phone}</td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
     }
 
     function sortByPrice() {
-      asc = !asc;
-      cargos.sort((a, b) => asc ? a.price - b.price : b.price - a.price);
-      render(cargos);
+        currentSortAsc = !currentSortAsc;
+        
+        // Сортировка массива
+        cargos.sort((a, b) => {
+            return currentSortAsc ? a.price - b.price : b.price - a.price;
+        });
+
+        // Обновляем иконку
+        const icon = document.getElementById('price-icon');
+        icon.innerText = currentSortAsc ? "↑" : "↓";
+
+        render(cargos);
     }
 
+    // Поиск
     document.getElementById('search').addEventListener('input', e => {
-      const q = e.target.value.toLowerCase();
-      const filtered = cargos.filter(c =>
-        c.name.toLowerCase().includes(q)
-      );
-      render(filtered);
+        const query = e.target.value.toLowerCase();
+        const filtered = cargos.filter(c =>
+            c.name.toLowerCase().includes(query)
+        );
+        render(filtered);
     });
 
+    // Первичная отрисовка
     render(cargos);
-  </script>
+</script>
+
 </body>
 </html>
-
